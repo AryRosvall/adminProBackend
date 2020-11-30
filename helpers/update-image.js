@@ -33,7 +33,6 @@ const updateImage = async (table, filename, model) => {
   try {
 
     let oldImage = '';
-
     oldImage = model.img;
     model.img = filename;
 
