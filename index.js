@@ -19,6 +19,10 @@ try {
   // Routes
   app.use('/api/users', require('./routes/users.route'));
   app.use('/api/login', require('./routes/auth.route'));
+  app.use('/api/hospitals', require('./routes/hospitals.route'));
+  app.use('/api/doctors', require('./routes/doctors.route'));
+  app.use('/api/all', require('./routes/search.route'));
+  app.use('/api/uploads', require('./routes/uploads.route'));
 
 
   app.get('/', (req, res) => {
