@@ -16,6 +16,10 @@ try {
   // Database
   dbConnection();
 
+  // Public directory
+
+  app.use(express.static('public'));
+
   // Routes
   app.use('/api/users', require('./routes/users.route'));
   app.use('/api/login', require('./routes/auth.route'));
@@ -24,14 +28,12 @@ try {
   app.use('/api/all', require('./routes/search.route'));
   app.use('/api/uploads', require('./routes/uploads.route'));
 
-
   app.get('/', (req, res) => {
     res.json({
       ok: true,
       msg: 'Hola Mundo'
     });
   });
-
 
   app.listen(3000, () => {
     console.log(`Server running at port ${process.env.PORT}`);
