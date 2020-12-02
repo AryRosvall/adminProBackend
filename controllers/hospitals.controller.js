@@ -1,8 +1,6 @@
 const { response } = require('express');
-const bcrypt = require('bcryptjs');
 
 const Hospital = require('../models/hospital.model');
-const { generateJWT } = require('../helpers/jwt');
 
 const getHospitals = async (req, res = response) => {
 
@@ -53,36 +51,28 @@ const createHospitals = async (req, res = response) => {
   }
 }
 
-//TODO Validate token and check if the hospital is correct
 const updateHospital = async (req, res = response) => {
   try {
 
-    const uid = req.params.id;
+    const hospitalId = req.params.id;
+    const uid = req.uid;
 
-    const hospital = await Hospital.findById(uid);
+    const hospital = await Hospital.findById(hospitalId);
 
     if (!hospital) {
       return res.status(404).json({
         ok: false,
-        msg: `The hospital with the uid ${uid} doesn't exists`
+        msg: `The hospital with the uid ${hospitalId} doesn't exists`
       })
     }
 
     // Update hospital
-    const { password, google, email, ...fields } = req.body;
+    const hospitalChanges = {
+      ...req.body,
+      user: uid
+    };
 
-    if (hospital.email !== email) {
-      const emailExists = await Hospital.findOne({ email: email })
-      if (emailExists) {
-        return res.status(404).json({
-          ok: false,
-          msg: `This email is already taken`
-        })
-      }
-    }
-
-    fields.email = email;
-    const updatedHospital = await Hospital.findByIdAndUpdate(uid, fields, { new: true });
+    const updatedHospital = await Hospital.findByIdAndUpdate(hospitalId, hospitalChanges, { new: true });
 
     res.json({
       ok: true,
@@ -102,10 +92,8 @@ const deleteHospital = async (req, res = response) => {
 
   try {
 
-    const { id } = req.params;
-
+    const id = req.params.id;
     const hospital = await Hospital.findById(id);
-    console.log("hospital", hospital)
 
     if (!hospital) {
       return res.status(404).json({
@@ -127,9 +115,7 @@ const deleteHospital = async (req, res = response) => {
       msg: 'Ups! something went wrong'
     })
   }
-
 }
-
 
 module.exports = {
   getHospitals,

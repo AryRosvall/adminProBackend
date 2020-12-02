@@ -55,12 +55,11 @@ const createDoctors = async (req, res = response) => {
   }
 }
 
-//TODO Validate token and check if the doctor is correct
+
 const updateDoctor = async (req, res = response) => {
   try {
 
     const uid = req.params.id;
-
     const doctor = await Doctor.findById(uid);
 
     if (!doctor) {
@@ -70,21 +69,17 @@ const updateDoctor = async (req, res = response) => {
       })
     }
 
-    // Update doctor
-    const { password, google, email, ...fields } = req.body;
+    //Check if the hospital to be added, is already registered in the doctor
+    const doctorChanges = { ...req.body };
+    const hospitals = doctor.hospitals;
 
-    if (doctor.email !== email) {
-      const emailExists = await Doctor.findOne({ email: email })
-      if (emailExists) {
-        return res.status(404).json({
-          ok: false,
-          msg: `This email is already taken`
-        })
-      }
-    }
+    doctorChanges.hospitals.map(hospital => {
+      if (!hospitals.includes(hospital))
+        hospitals.push(hospital)
+    });
+    doctorChanges.hospitals = hospitals;
 
-    fields.email = email;
-    const updatedDoctor = await Doctor.findByIdAndUpdate(uid, fields, { new: true });
+    const updatedDoctor = await Doctor.findByIdAndUpdate(uid, doctorChanges, { new: true });
 
     res.json({
       ok: true,
@@ -107,7 +102,6 @@ const deleteDoctor = async (req, res = response) => {
     const { id } = req.params;
 
     const doctor = await Doctor.findById(id);
-    console.log("doctor", doctor)
 
     if (!doctor) {
       return res.status(404).json({
@@ -129,9 +123,7 @@ const deleteDoctor = async (req, res = response) => {
       msg: 'Ups! something went wrong'
     })
   }
-
 }
-
 
 module.exports = {
   getDoctors,

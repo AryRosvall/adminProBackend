@@ -42,7 +42,7 @@ const login = async (req, res = response) => {
 
   } catch (error) {
     console.log(error);
-    res.status(500).json({
+    return res.status(500).json({
       ok: false,
       msg: 'Ups! something went wrong'
     })
@@ -86,14 +86,36 @@ const googleSignIn = async (req, res = response) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(401).json({
+    return res.status(401).json({
       ok: false,
       msg: 'Invalid token'
     });
   }
 }
 
+const renewToken = async (req, res = response) => {
+
+  try {
+
+    const uid = req.uid;
+    const token = await generateJWT(uid);
+
+    res.status(200).json({
+      ok: true,
+      token
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(401).json({
+      ok: false,
+      msg: 'Invalid token'
+    });
+  }
+}
+
+
 module.exports = {
   login,
-  googleSignIn
+  googleSignIn,
+  renewToken
 }

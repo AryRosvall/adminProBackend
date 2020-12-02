@@ -22,7 +22,7 @@ router.post('/',
 router.put('/:id',
   [
     validateJWT,
-
+    check('name', 'The hospital\'s name is required').notEmpty(),
     fieldValidator
   ],
   updateHospital

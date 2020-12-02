@@ -22,14 +22,17 @@ router.post('/',
   createDoctors
 );
 
-
 router.put('/:id',
   [
     validateJWT,
+    check('name', 'The doctor\'s name is required').optional().notEmpty(),
+    check('hospitals', 'At least one hospital is necessary').optional().isArray({ min: 1 }),
+    check('hospitals.*', 'Invalid Id').isMongoId(),
     fieldValidator
   ],
   updateDoctor
 );
+
 router.delete('/:id',
   validateJWT,
   deleteDoctor
