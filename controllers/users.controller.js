@@ -64,7 +64,6 @@ const createUsers = async (req, res = response) => {
   }
 }
 
-//TODO Vallidate token and check if the user is correct
 const updateUser = async (req, res = response) => {
   try {
 
@@ -85,14 +84,21 @@ const updateUser = async (req, res = response) => {
     if (user.email !== email) {
       const emailExists = await User.findOne({ email: email })
       if (emailExists) {
-        return res.status(404).json({
+        return res.status(403).json({
           ok: false,
           msg: `This email is already taken`
         })
       }
     }
 
-    fields.email = email;
+    if (!user.google) {
+      fields.email = email;
+    } else if (user.email !== email) {
+      return res.status(403).json({
+        ok: false,
+        msg: `Google user can't change their email`
+      })
+    }
     const updatedUser = await User.findByIdAndUpdate(uid, fields, { new: true });
 
     res.json({
